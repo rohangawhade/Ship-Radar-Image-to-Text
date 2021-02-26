@@ -10,6 +10,7 @@ tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\t
 
 pipeline = keras_ocr.pipeline.Pipeline()
 
+
 def TextRecognition(imgPath):
     image = cv2.imread(imgPath)
     OriginalImg = image
@@ -42,7 +43,6 @@ def TextRecognition(imgPath):
         keras_ocr.tools.drawAnnotations(
             image=image, predictions=predictions, ax=ax)
 
-
     imgPath1 = "./images/shipInfo.png"
     imgPath2 = "./images/targetInfo.png"
     imgPath3 = "./images/stablized.png"
@@ -64,26 +64,25 @@ def TextRecognition(imgPath):
     def ShipInformation(text):
         text = text.split("\n")
         HDG = text[0].split(" ")[-1]
-        if(len(HDG)<2):
+        if(len(HDG) < 2):
             HDG = ' '.join(text[0].split(" ")[-2:])
 
         SPD = ' '.join(text[1].split(" ")[-2:])
-        if(len(SPD)<2):
+        if(len(SPD) < 2):
             SPD = ' '.join(text[1].split(" ")[-3:])
 
         COG = text[2].split(" ")[-1]
-        if(len(COG)<2):
+        if(len(COG) < 2):
             COG = ' '.join(text[2].split(" ")[-2:])
 
         SOG = ' '.join(text[3].split(" ")[-2:])
-        if(len(SOG)<2):
+        if(len(SOG) < 2):
             SOG = ' '.join(text[3].split(" ")[-3:])
 
-        UTC = [" ".join(time.split(" ")[1:])
-            for time in text if(time and time[0] == "U")][0]
+        UTC = [" ".join(time.split(" ")[1:]) for time in text if(
+            time and time[0] == "U")][0]
         shipInfo = {"HDG": HDG, "SPD": SPD, "COG": COG, "SOG": SOG, "UTC": UTC}
         return shipInfo
-
 
     def TargetInformation(text):
         text = text.split("\n")
@@ -92,18 +91,15 @@ def TextRecognition(imgPath):
         targetInfo = {"Vector": vector, "Past Posn": posn}
         return targetInfo
 
-
     def Stabilized(text):
         text = text.split("\n")[0]
         stable = {"Stabilized": text}
         return stable
 
-
     def ModeDisp():
         mode = prediction_groups[0][0][0]+" "+prediction_groups[0][1][0]
         Mode = {"Mode": mode}
         return Mode
-
 
     def BarMode(text):
         t = text.split("\n")
@@ -118,27 +114,22 @@ def TextRecognition(imgPath):
         modes = {"Sea": sea, "Rain": rain, "Tune": tune}
         return modes
 
-
     def Range():
         toprange = prediction_groups[1][0][0]
         Range = {"Range": toprange}
         return Range
 
-
     image = OriginalImg
-
 
     def crop_bars(x, xh, y, yh, name):
         crop_img = image[x: xh, y: yh]
         name = "./images/" + name + ".png"
         cv2.imwrite(name, crop_img)
 
-
     crop_bars(940, 950, 62, 113, "GainCrop")  # Gain Bar Image
     crop_bars(960, 970, 62, 113, "SeaCrop")  # Sea Bar Image
     crop_bars(980, 990, 62, 113, "RainCrop")  # Rain Bar Image
     crop_bars(1000, 1010, 62, 113, "TuneCrop")  # Tune Bar Image
-
 
     def bar_percentage(cropped_image):
         white = [248, 248, 248]  # RGB
@@ -151,7 +142,6 @@ def TextRecognition(imgPath):
             mask = cv2.inRange(cropped_image, lower, upper)
             ratio_white = cv2.countNonZero(mask)/(cropped_image.size/3)
             return(np.round(ratio_white*100, 2))
-
 
     def ShowBars():
         Gain_percentage_crop = cv2.imread('./images/GainCrop.png')
@@ -168,7 +158,6 @@ def TextRecognition(imgPath):
                 "Tune Mode": value["Tune"]
                 }
         return Bars
-
 
     def GetValues():
         Map = {}
